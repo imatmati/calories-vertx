@@ -8,6 +8,7 @@ import io.vertx.core.json.JsonObject;
 public class DataUtils {
 
   public static final String ALIMENT_COLLECTION = "aliments";
+  public static final String COLONNE_NOM_ALIMENT = "ORIGFDNM";
 
    public static JsonObject getJsonObjectFrom(String[] row, String[] fields) {
     JsonObject jsonObject = new JsonObject();

@@ -7,9 +7,6 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-/**
- * Created by b41d3r on 12/02/17.
- */
 public class CalculateCalories extends AbstractVerticle {
 
   @Override

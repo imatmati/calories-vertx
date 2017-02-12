@@ -49,7 +49,7 @@ public class BatchAlimentCSVFileVerticle extends AbstractVerticle {
           file.endHandler(event -> {
                     bus.close((e) -> {});
                     vertx.close();});
-          Pump pump = Pump.pump(file, new CustomWriter(mongoClient));
+          Pump pump = Pump.pump(file, new CSVWriter(mongoClient));
           pump.start();
 
         } else {
@@ -61,13 +61,13 @@ public class BatchAlimentCSVFileVerticle extends AbstractVerticle {
   }
 
 
-  private static class CustomWriter implements WriteStream<Buffer> {
+  private static class CSVWriter implements WriteStream<Buffer> {
 
     private MongoClient mongoClient;
 
     private boolean isFirstBuffer =true;
 
-    public CustomWriter(MongoClient mongoClient) {
+    public CSVWriter(MongoClient mongoClient) {
 
       this.mongoClient = mongoClient;
     }
@@ -76,6 +76,7 @@ public class BatchAlimentCSVFileVerticle extends AbstractVerticle {
     @Override
     public WriteStream write(Buffer data) {
 
+      //Encodage particulier du fichier à traiter
       String[] rowData = data.toString(Charset.forName("ISO-8859-1")).split(LINE_SEPARATOR);
       // Pour passer la ligne de headers
       int j =0;
@@ -100,7 +101,7 @@ public class BatchAlimentCSVFileVerticle extends AbstractVerticle {
           JsonObject obj = DataUtils.getJsonObjectFrom(cols, FIELDS);
           // Pas d'insert many disponible ...
           if (Objects.nonNull(obj)) {
-            mongoClient.save("aliments", obj, id -> {
+            mongoClient.save(DataUtils.ALIMENT_COLLECTION, obj, id -> {
             });
           }
         }

@@ -25,9 +25,7 @@ public class LoaderVerticle extends AbstractVerticle {
 
     String file = args[0],
       dataType = args[1];
-    String extension = FileUtils.getFileExtension(file).orElseThrow(
-      () -> new IllegalArgumentException("file " + file + " has no known extension")
-      );
+    String extension = FileUtils.getFileExtension(file).orElseThrow(() -> new IllegalArgumentException("file " + file + " has no known extension"));
     generalConfiguration();
 
     Vertx vertx = Vertx.vertx();
