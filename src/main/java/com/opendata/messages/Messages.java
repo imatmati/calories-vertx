@@ -8,4 +8,8 @@ public interface  Messages {
     String ALIMENT_CSV = DataUtils.ALIMENT_COLLECTION+":csv";
   }
 
+  interface Macros {
+    String CALORIE = "calculate:calorie";
+  }
+
 }

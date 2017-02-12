@@ -14,6 +14,7 @@ import io.vertx.core.streams.Pump;
 import io.vertx.core.streams.WriteStream;
 import io.vertx.ext.mongo.MongoClient;
 
+import java.nio.charset.Charset;
 import java.util.Objects;
 
 import static com.opendata.messages.Messages.Adresses;
@@ -75,7 +76,7 @@ public class BatchAlimentCSVFileVerticle extends AbstractVerticle {
     @Override
     public WriteStream write(Buffer data) {
 
-      String[] rowData = data.toString().split(LINE_SEPARATOR);
+      String[] rowData = data.toString(Charset.forName("ISO-8859-1")).split(LINE_SEPARATOR);
       // Pour passer la ligne de headers
       int j =0;
       if (isFirstBuffer) {
@@ -86,15 +87,15 @@ public class BatchAlimentCSVFileVerticle extends AbstractVerticle {
       for (; j < rowData.length; j++) {
 
         String[] cols = rowData[j].split(CSV_SEPARATOR);
-        if (remains.length() != 0) {
+        if (incompletePreviousLine.length() != 0) {
 
-          cols = (remains + rowData[j]).split(CSV_SEPARATOR);
-          remains = "";
+          cols = (incompletePreviousLine + rowData[j]).split(CSV_SEPARATOR);
+          incompletePreviousLine = "";
         }
         int leftFields = cols.length % NB_FIELDS;
 
         if (leftFields > 0) {
-          remains = rowData[j];
+          incompletePreviousLine = rowData[j];
         } else {
           JsonObject obj = DataUtils.getJsonObjectFrom(cols, FIELDS);
           // Pas d'insert many disponible ...
@@ -110,8 +111,7 @@ public class BatchAlimentCSVFileVerticle extends AbstractVerticle {
 
 
     @Override
-    public void end() {
-      System.out.println("END");
+    public void end(){
     }
 
     @Override
@@ -134,9 +134,8 @@ public class BatchAlimentCSVFileVerticle extends AbstractVerticle {
       return this;
     }
 
-    private final int NB_FIELDS = 65;
-    String remains = "";
-    String[] FIELDS = {"ORIGGPCD",
+    private String incompletePreviousLine = "";
+    private String[] FIELDS = {"ORIGGPCD",
       "ORIGGPFR",
       "ORIGFDCD",
       "ORIGFDNM",
@@ -201,8 +200,7 @@ public class BatchAlimentCSVFileVerticle extends AbstractVerticle {
       "vitamine_b6",
       "vitamine_b9",
       "vitamine_b12"};
+
+    private final int NB_FIELDS = FIELDS.length;
   }
-
-
-
 }
