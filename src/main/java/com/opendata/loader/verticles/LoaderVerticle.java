@@ -29,12 +29,11 @@ public class LoaderVerticle extends AbstractVerticle {
     generalConfiguration();
 
     Vertx vertx = Vertx.vertx();
-    vertx.deployVerticle(new BatchAlimentCSVFileVerticle());
-
-    vertx.setTimer(200, evt -> {
+    vertx.deployVerticle(new BatchAlimentCSVFileVerticle(),evt -> {
       final EventBus bus = vertx.eventBus();
       bus.send(dataType + ":" + extension, file);
     });
+
   }
 
   private void printUsage() {
